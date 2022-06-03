@@ -14,7 +14,9 @@
   --turuncu: #ec994b;
   --kirikBeyaz: #f1eee9;
 }
-
+body{
+  box-sizing: border-box;
+}
 ::-webkit-scrollbar {
   /* width */
   width: 7px;
@@ -43,17 +45,21 @@
 }
 
 #map {
-  height: 700px;
+  height: 415px;
 }
+
+.auto-search-wrapper {
+  margin: auto;
+}
+
 #haritaContainer {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  margin-top: 50px;
 }
 
 #haritaBox {
-  height: 700px;
   width: 75%;
   overflow-y: clip;
 
