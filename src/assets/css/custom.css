@@ -47,6 +47,10 @@ body{
 #map {
   height: 415px;
 }
+#haritaGoster {
+  height: 508px;
+}
+
 
 .auto-search-wrapper {
   margin: auto;

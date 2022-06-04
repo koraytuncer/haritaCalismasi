@@ -6,9 +6,9 @@ new Autocomplete("search", {
     // onSearch
     onSearch: ({ currentValue }) => {
       // api
-      const api = `https://nominatim.openstreetmap.org/search?format=geojson&limit=5&city=${encodeURI(
-        currentValue
-      )}`;
+      const api = `https://nominatim.openstreetmap.org/search?format=geojson&limit=5&city=${encodeURI(currentValue)}`;
+
+      
   
       // You can also use static files
       // const api = './search.json'
@@ -56,6 +56,11 @@ new Autocomplete("search", {
           .then((response) => response.json())
           .then((data) => {
             resolve(data.features);
+            console.log(data.features);
+              var il = data[0].properties.city;
+              var ilce = data[0].properties.county;
+              document.getElementById("il").value = il ? il : data[0].properties.state;
+              document.getElementById("ilce").value = ilce ? ilce : data[0].properties.town || data[0].properties.suburb
           })
           .catch((error) => {
             console.error(error);
@@ -66,7 +71,7 @@ new Autocomplete("search", {
     // nominatim GeoJSON format
     onResults: ({ currentValue, matches, template }) => {
       const regex = new RegExp(currentValue, "gi");
-  
+
       // if the result returns 0 we
       // show the no results element
       return matches === 0
@@ -86,7 +91,7 @@ new Autocomplete("search", {
             .join("");
     },
   
-    onSubmit: ({ object }) => {
+    onSubmit: ({ object,response }) => {
       // remove all layers from the map
       map.eachLayer(function (layer) {
         if (!!layer.toGeoJSON) {
@@ -107,8 +112,15 @@ new Autocomplete("search", {
         document.getElementById('acikAdres').value = display_name;
   
       marker.addTo(map);
-  
-      map.setView([lng, lat], 8);
+
+      map.setView([lng, lat], 15);
+
+      marker.on("click", function (e) {
+        map.removeLayer(marker)
+      });
+
+
+
     },
   
     // get index and data from li element after
@@ -116,6 +128,7 @@ new Autocomplete("search", {
     // arrow keys ↓ | ↑
     onSelectedItem: ({ index, element, object }) => {
       console.log("onSelectedItem:", { index, element, object });
+      console.log(object)
     },
   
     // the method presents no results
