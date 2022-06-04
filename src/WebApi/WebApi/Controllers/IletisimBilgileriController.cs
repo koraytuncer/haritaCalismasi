@@ -36,6 +36,23 @@ namespace WebApi.Controllers
             return Ok(data);
         }
 
+        [HttpPost("Filter")]
+        public async Task<IActionResult> Filter(IletisimFilter filter)
+        {
+            var data = _context.IletisimBilgileri.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter.MagzaAdi))
+                data = data.Where(m => m.MagzaAdi.ToLower().Contains(filter.MagzaAdi.ToLower()));
+
+            if (filter.Il!=null)
+                data = data.Where(m => m.Il==filter.Il);
+
+            if (filter.Ilce != null)
+                data = data.Where(m => m.Ilce == filter.Ilce);
+
+            return Ok(await data.ToListAsync());
+        }
+
         [HttpPost]
         public async Task<IActionResult> Add(CreateIletisimBilgileriDto model)
         {
@@ -85,7 +102,7 @@ namespace WebApi.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Created("", model);
+            return Ok(model);
         }
 
         [HttpDelete("{id}")]
@@ -94,7 +111,8 @@ namespace WebApi.Controllers
             var data = await _context.IletisimBilgileri.FindAsync(id);
             _context.IletisimBilgileri.Remove(data);
             await _context.SaveChangesAsync();
-            return Ok(data);
+
+            return NoContent();
         }
     }
 }

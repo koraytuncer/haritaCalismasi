@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WebApi.Dtos
 {
-    public class UpdateletisimBilgileriDto:CreateIletisimBilgileriDto
+    public record UpdateletisimBilgileriDto:CreateIletisimBilgileriDto
     {
         public int Id { get; set; }
     }
