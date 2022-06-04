@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApi.Context;
 
 namespace WebApi
 {
@@ -28,6 +29,7 @@ namespace WebApi
         {
 
             services.AddControllers();
+            services.AddDbContext<AppDbContext>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApi", Version = "v1" });
