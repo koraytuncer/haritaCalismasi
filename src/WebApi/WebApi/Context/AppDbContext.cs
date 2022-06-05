@@ -21,6 +21,9 @@ namespace WebApi.Context
             optionsBuilder.UseSqlite($"Data Source={DbPath}");
         }
 
+
         public DbSet<IletisimBilgileri> IletisimBilgileri { get; set; }
+        public DbSet<iller> iller { get; set; }
+        public DbSet<ilceler> ilceler { get; set; }
     }
 }

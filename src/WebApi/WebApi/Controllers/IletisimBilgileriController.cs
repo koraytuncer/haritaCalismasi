@@ -26,6 +26,7 @@ namespace WebApi.Controllers
         public async Task<IActionResult> GetAll()
         {
             var data = await _context.IletisimBilgileri.ToListAsync();
+
             return Ok(data);
         }
 
@@ -44,8 +45,8 @@ namespace WebApi.Controllers
             if (!string.IsNullOrEmpty(filter.MagzaAdi))
                 data = data.Where(m => m.MagzaAdi.ToLower().Contains(filter.MagzaAdi.ToLower()));
 
-            if (filter.Il!=null)
-                data = data.Where(m => m.Il==filter.Il);
+            if (filter.Il != null)
+                data = data.Where(m => m.Il == filter.Il);
 
             if (filter.Ilce != null)
                 data = data.Where(m => m.Ilce == filter.Ilce);
@@ -57,7 +58,7 @@ namespace WebApi.Controllers
         public async Task<IActionResult> Add(CreateIletisimBilgileriDto model)
         {
 
-            if (string.IsNullOrEmpty( model.AcikAdres)
+            if (string.IsNullOrEmpty(model.AcikAdres)
                 || string.IsNullOrEmpty(model.MagzaAdi)
                 || string.IsNullOrEmpty(model.Enlem)
                 || string.IsNullOrEmpty(model.Boylam))
@@ -90,7 +91,7 @@ namespace WebApi.Controllers
 
             var add = _context.IletisimBilgileri.Update(new Entities.IletisimBilgileri
             {
-                Id=model.Id,
+                Id = model.Id,
                 AcikAdres = model.AcikAdres,
                 Boylam = model.Boylam,
                 Enlem = model.Enlem,
@@ -114,5 +115,22 @@ namespace WebApi.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("Il")]
+        public async Task<IActionResult> Il()
+        {
+            var data = await _context.iller.ToListAsync();
+
+            return Ok(data);
+        }
+
+        [HttpGet("Ilce/{ilId}")]
+        public async Task<IActionResult> Ilce(int ilId)
+        {
+            var data =await  _context.ilceler.Where(m => m.sehirid == ilId).ToListAsync();
+
+            return Ok(data);
+        }
     }
+
 }
