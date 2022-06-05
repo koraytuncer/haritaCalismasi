@@ -14,7 +14,7 @@
   --turuncu: #ec994b;
   --kirikBeyaz: #f1eee9;
 }
-body{
+*{
   box-sizing: border-box;
 }
 ::-webkit-scrollbar {
@@ -66,7 +66,6 @@ body{
 #haritaBox {
   width: 75%;
   overflow-y: clip;
-
 }
 
 #sonucAlani {
@@ -75,7 +74,7 @@ body{
   padding-right: 3px;
 }
 .sonucEleman {
-  height: 170px;
+  /* height: 170px; */
   margin-bottom: 3px;
 }
 .sonucEleman:hover {
