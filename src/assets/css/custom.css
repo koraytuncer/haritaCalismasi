@@ -62,16 +62,19 @@
   align-items: center;
   margin-top: 50px;
 }
+#menuContainer {
+  height: 500px;
+}
 
 #haritaBox {
   width: 75%;
-  overflow-y: clip;
+  height: 524px;
 }
 
 #sonucAlani {
-  overflow-y: auto;
-  height: 52%;
+  overflow-y: scroll;
   padding-right: 3px;
+  height: 70%;
 }
 .sonucEleman {
   /* height: 170px; */
