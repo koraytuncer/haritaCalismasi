@@ -27,7 +27,9 @@ map.on("click", function mapClickListen(e) {
 
   marker.on("click", function (e) {
     map.removeLayer(marker);
+    $("#magazaForm")[0].reset();
   });
+
   marker.addTo(map);
 });
 
@@ -42,7 +44,7 @@ $.ajax({
     //İllerin Listelenmesi
     $("#yonetimIl").empty();
     $("#yonetimIl").append('<option value="0">İl Seçiniz</option>');
-    Listele()
+    Listele();
 
     $.each(data, function () {
       $("#yonetimIl").append('<option value="' + this.id + '">' + this.sehiradi + "</option>");
@@ -75,6 +77,7 @@ $("#yonetimIl").on("change", function () {
 
 //Verilerin Gönderilmesi
 $("#kaydetBtn").on("click", function () {
+  // var ilceAd = $("#yonetimIlce :selected").text()
   var ilceId = $("#yonetimIlce").val();
   var ilId = $("#yonetimIl").val();
   var magzaAdi = $("#mazagaAdi").val();
@@ -133,38 +136,99 @@ $("#kaydetBtn").on("click", function () {
   }
 });
 
+//Silme İşlemleri
+function magazaSil(id) {
+  $.ajax({
+    url: "https://localhost:44377/api/IletisimBilgileri/" + id,
+    method: "DELETE",
+  })
+    .done(function (e) {
+      Listele(id)
+      toastr["success"]("Silme İşlemi Başarılı");
+    })
+    .fail(function (xhr) {
+      console.error(xhr);
+    });
+
+      
+   
+}
+
 //Datatable Listeleme
 function Listele() {
   $.ajax({
     url: "https://localhost:44377/api/IletisimBilgileri",
     method: "GET",
-    contentType: "application/json",
-    dataType: "json",
-  }).done(function (data) {
-    data.forEach((data) => {
-      
-      $("#magazaListele").append(`
-    
-    <tr>
-      <td scope="row">${data.id}</td>
-      <td>${data.il}</td>
-      <td>${data.ilce}</td>
-      <td>${data.magzaAdi}</td>
-      <td>${data.acikAdres}</td>
-      <td>${data.telefon}</td>
-      <td>${data.enlem}</td>
-      <td>${data.boylam}</td>
-      <td style="width:120px ;">   
-         <a href="" type="button" class="btn btn-success">
-             <i class="bi bi-pencil-square"></i>
-         </a>
-         <a href="" type="button" class="btn btn-danger">
-             <i class="bi bi-trash"></i>
-         </a>
-      </td>
-  </tr>   
-    
-    `);
+  })
+    .done(function (data) {
+      console.log(data)
+      $("#magazaListele").DataTable({
+        language: {
+          url: "https://cdn.datatables.net/plug-ins/1.10.21/i18n/Turkish.json",
+        }, 
+        data: data,
+        columns: [
+          { data: "il" },
+          { data: "id" },
+          { data: "ilce" },
+          { data: "magzaAdi" },
+          { data: "acikAdres" },
+          { data: "telefon" },
+          { data: "enlem" },
+          { data: "boylam" },
+
+        ],
+        columnDefs: [
+          {
+            targets: [0, 1, 2, 3, 4, 5, 6, 7],
+            className: "text-left",
+          },
+          {
+            targets: [8],
+            className: "text-center",
+            render: function (data, type, row) {
+              return `<button class="btn btn-danger btn-sm" onclick="magazaSil(${row.id})">Sil</button>`;
+            },
+          },
+        ],
+      });
+    })
+    .fail(function (xhr) {
+      console.error(xhr);
     });
-  });
-};
+}
+
+
+// function Listele() {
+//   $.ajax({
+//     url: "https://localhost:44377/api/IletisimBilgileri",
+//     method: "GET",
+//     contentType: "application/json",
+//     dataType: "json",
+//   }).done(function (data) {
+//     data.forEach((data) => {
+//       $("#magazaListele").append(`
+    
+//     <tr>
+//       <td scope="row">${data.id}</td>
+//       <td>${data.il}</td>
+//       <td>${data.ilce}</td>
+//       <td>${data.magzaAdi}</td>
+//       <td>${data.acikAdres}</td>
+//       <td>${data.telefon}</td>
+//       <td>${data.enlem}</td>
+//       <td>${data.boylam}</td>
+//       <td style="width:120px ;">   
+//          <a href="" type="button" class="btn btn-success">
+//              <i class="bi bi-pencil-square"></i>
+//          </a>
+//          <a onclick="magazaSil(${data.id})" type="button" class="btn btn-danger">
+//              <i class="bi bi-trash"></i>
+//          </a>
+//       </td>
+//   </tr>   
+    
+//     `);
+//     });
+//   });
+// }
