@@ -27,7 +27,24 @@ namespace WebApi.Controllers
         {
             var data = await _context.IletisimBilgileri.ToListAsync();
 
-            return Ok(data);
+            var result = (from iletisim in _context.IletisimBilgileri
+                          join il in _context.iller on iletisim.Il equals il.id
+                          join ilce in _context.ilceler on iletisim.Ilce equals ilce.id
+                          select new IletisimBilgileriDto
+                          {
+                              Id =iletisim.Id,
+                              AcikAdres = iletisim.AcikAdres,
+                              Boylam = iletisim.Boylam,
+                              Enlem = iletisim.Enlem,
+                              Il = il.sehiradi,
+                              Ilce = ilce.ilceadi,
+                              MagzaAdi = iletisim.MagzaAdi,
+                              Telefon = iletisim.Telefon
+                          }).ToList();
+
+
+
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
