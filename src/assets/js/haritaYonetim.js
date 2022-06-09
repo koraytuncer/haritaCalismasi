@@ -126,42 +126,52 @@ $("#kaydetBtn").on("click", function () {
     })
       .done(function (e) {
         $("#magazaForm")[0].reset()
-        location.reload();
         toastr["success"]("Kayıt İşlemi Başarılı");
+        $("#magazaListele").html("")
+          func()
+      
       })
       .fail(function (xhr) {
         console.error(xhr);
       });
+
   }
 });
 
+//Veri Listeleme Fonksiyonu
+function func(){
+  fetch("https://localhost:44377/api/IletisimBilgileri").then(res => res.json()).then(res=>{
+    res.forEach(element => {
+      $("#magazaListele").append(`
+    <tr>
+    <th scope="row">${element.id}</th>
+    <td>${element.il}</td>
+    <td>${element.ilce}</td>
+    <td>${element.magzaAdi}</td>
+    <td>${element.acikAdres}</td>
+    <td>${element.telefon}</td>
+    <td>${element.enlem}</td>
+    <td>${element.boylam}</td>
+    <td>
+    <button class="btn btn-danger btn-sm" onclick="magazaSil(${element.id})">Sil</button>
+    <a onclick="" class="btn btn-success">Düzenle</a>
+    </td>
+    </tr>
+    
+    `);
+    });
+  })
+ 
+  
+}
 //Datatable Listeleme
   $.ajax({
     url: "https://localhost:44377/api/IletisimBilgileri",
     method: "GET",
   })
     .done(function (data) {
-      $("#magazaListele").DataTable({
-        language: {
-          url: "https://cdn.datatables.net/plug-ins/1.10.21/i18n/Turkish.json",
-        },
-        data: data,
-        columns: [{ data: "id" }, { data: "il" }, { data: "ilce" }, { data: "magzaAdi" }, { data: "acikAdres" }, { data: "telefon" }, { data: "enlem" }, { data: "boylam" }],
-        columnDefs: [
-          {
-            targets: [0, 1, 2, 3, 4, 5, 6, 7],
-            className: "text-left",
-          },
-          {
-            targets: [8],
-            className: "text-center",
-            render: function (data, type, row) {
-              return `<button class="btn btn-danger btn-sm" onclick="magazaSil(${row.id})">Sil</button>`;
-            },
-          },
-        ],
-      });
-     
+      func(data)
+      
     })
     .fail(function (xhr) {
       console.error(xhr);
@@ -173,9 +183,10 @@ function magazaSil(id) {
     url: "https://localhost:44377/api/IletisimBilgileri/" + id,
     method: "DELETE",
   })
-    .done(function (e) {
+    .done(function (data) {
       toastr["success"]("Silme İşlemi Başarılı");
-      location.reload();
+      $("#magazaListele").html("")
+      func()
     })
     .fail(function (xhr) {
       console.error(xhr);
