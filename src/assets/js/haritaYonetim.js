@@ -1,11 +1,11 @@
-var map = L.map("map").setView([39.2, 32.2], 6);
+let map = L.map("map").setView([39.2, 32.2], 6);
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
   attribution: "© OpenStreetMap",
 }).addTo(map);
 
-var marker;
+let marker;
 
 map.on("click", function mapClickListen(e) {
   $.ajax({
@@ -33,56 +33,106 @@ map.on("click", function mapClickListen(e) {
   marker.addTo(map);
 });
 
-//Api ile il verilerinin çekilmesi
-var ilApi = "https://localhost:44377/api/IletisimBilgileri/Il";
+let ilApi = "https://localhost:44377/api/IletisimBilgileri/Il";
+let ilceApi = "https://localhost:44377/api/IletisimBilgileri/Ilce/";
+let magazaApi = "https://localhost:44377/api/IletisimBilgileri/";
 
-$.ajax({
-  url: ilApi,
-  method: "GET",
-})
-  .done(function (data) {
-    //İllerin Listelenmesi
-    $("#yonetimIl").empty();
-    $("#yonetimIl").append('<option value="0">İl Seçiniz</option>');
-    $.each(data, function () {
-      $("#yonetimIl").append('<option value="' + this.id + '">' + this.sehiradi + "</option>");
-    });
-  })
-  .fail(function (xhr) {
-    console.error(xhr);
-  });
-
-//Api ile ilçe verilerinin çekilmesi
-$("#yonetimIl").on("change", function () {
-  var ilId = $(this).val();
-  var ilceApi = "https://localhost:44377/api/IletisimBilgileri/Ilce/" + ilId;
-
+//Fonksiyonlar
+function illeriGetir() {
   $.ajax({
-    url: ilceApi,
+    url: ilApi,
     method: "GET",
   })
     .done(function (data) {
-      $("#yonetimIlce").empty();
-      $("#yonetimIlce").append('<option value="0">İlçe Seçiniz</option>');
+      //İllerin Listelenmesi
+      $("#yonetimIl").empty();
+      $("#yonetimIl").append('<option value="0">İl Seçiniz</option>');
       $.each(data, function () {
-        $("#yonetimIlce").append('<option value="' + this.id + '">' + this.ilceadi + "</option>");
+        $("#yonetimIl").append('<option value="' + this.id + '">' + this.sehiradi + "</option>");
       });
     })
     .fail(function (xhr) {
       console.error(xhr);
     });
-});
+}
+function ilceleriGetir(api) {
+  $("#yonetimIl").on("change", function () {
+    let ilId = $(this).val();
+    $.ajax({
+      url: api + ilId,
+      method: "GET",
+    })
+      .done(function (data) {
+        $("#yonetimIlce").empty();
+        $("#yonetimIlce").append('<option value="0">İlçe Seçiniz</option>');
+        $.each(data, function () {
+          $("#yonetimIlce").append('<option value="' + this.id + '">' + this.ilceadi + "</option>");
+        });
+      })
+      .fail(function (xhr) {
+        console.error(xhr);
+      });
+  });
+}
+function veriGonder(api, data) {
+  $.ajax({
+    url: api,
+    method: "POST",
+    contentType: "application/json",
+    dataType: "json",
+    data: data,
+  })
+    .done(function (e) {
+      $("#magazaForm")[0].reset();
+      toastr["success"]("Kayıt İşlemi Başarılı");
+      $("#magazaListele").html("");
+      magazaListele();
+    })
+    .fail(function (xhr) {
+      console.error(xhr);
+    });
+}
+function veriSil(id) {
+  $.ajax({
+    url: "https://localhost:44377/api/IletisimBilgileri/" + id,
+    method: "DELETE",
+  })
+    .done(function (data) {
+      toastr["success"]("Silme İşlemi Başarılı");
+      $("#magazaListele").html("");
+      magazaListele();
+    })
+    .fail(function (xhr) {
+      console.error(xhr);
+    });
+}
+function datatableListele(api) {
+  $.ajax({
+    url: api,
+    method: "GET",
+  })
+    .done(function (data) {
+      magazaListele(data);
+    })
+    .fail(function (xhr) {
+      console.error(xhr);
+    });
+}
 
-//Verilerin Gönderilmesi
+//Fonksiyonları Çağırma
+illeriGetir(ilApi);
+ilceleriGetir(ilceApi);
+datatableListele(magazaApi);
+
+//Verilerin Veritabanına gönderilmesi
 $("#kaydetBtn").on("click", function () {
-  // var ilceAd = $("#yonetimIlce :selected").text()
-  var ilceId = $("#yonetimIlce").val();
-  var ilId = $("#yonetimIl").val();
-  var magzaAdi = $("#mazagaAdi").val();
-  var acikAdres = $("#acikAdres").val();
-  var telefon = $("#telefon").val();
-  var enlem = $("#enlem").val();
-  var boylam = $("#boylam").val();
+  let ilceId = $("#yonetimIlce").val();
+  let ilId = $("#yonetimIl").val();
+  let magzaAdi = $("#mazagaAdi").val();
+  let acikAdres = $("#acikAdres").val();
+  let telefon = $("#telefon").val();
+  let enlem = $("#enlem").val();
+  let boylam = $("#boylam").val();
 
   //Validation Kontrolleri
   if (ilId == 0) {
@@ -107,7 +157,7 @@ $("#kaydetBtn").on("click", function () {
     toastr["warning"]("Lütfen Boylam Giriniz");
     return;
   } else {
-    var data = JSON.stringify({
+    let data = JSON.stringify({
       il: ilId,
       ilce: ilceId,
       magzaAdi: magzaAdi,
@@ -117,32 +167,17 @@ $("#kaydetBtn").on("click", function () {
       boylam: boylam,
     });
 
-    $.ajax({
-      url: "https://localhost:44377/api/IletisimBilgileri",
-      method: "POST",
-      contentType: "application/json",
-      dataType: "json",
-      data: data,
-    })
-      .done(function (e) {
-        $("#magazaForm")[0].reset()
-        toastr["success"]("Kayıt İşlemi Başarılı");
-        $("#magazaListele").html("")
-          func()
-      
-      })
-      .fail(function (xhr) {
-        console.error(xhr);
-      });
-
+    veriGonder(magazaApi, data);
   }
 });
 
 //Veri Listeleme Fonksiyonu
-function func(){
-  fetch("https://localhost:44377/api/IletisimBilgileri").then(res => res.json()).then(res=>{
-    res.forEach(element => {
-      $("#magazaListele").append(`
+function magazaListele() {
+  fetch("https://localhost:44377/api/IletisimBilgileri")
+    .then((res) => res.json())
+    .then((res) => {
+      res.forEach((element) => {
+        $("#magazaListele").append(`
     <tr>
     <th scope="row">${element.id}</th>
     <td>${element.il}</td>
@@ -153,43 +188,13 @@ function func(){
     <td>${element.enlem}</td>
     <td>${element.boylam}</td>
     <td>
-    <button class="btn btn-danger btn-sm" onclick="magazaSil(${element.id})">Sil</button>
+    <button class="btn btn-sm btn-success" onclick="veriSil(${element.id})">Sil</button>
     <a onclick="" class="btn btn-success">Düzenle</a>
     </td>
     </tr>
     
     `);
+      });
     });
-  })
- 
-  
 }
 //Datatable Listeleme
-  $.ajax({
-    url: "https://localhost:44377/api/IletisimBilgileri",
-    method: "GET",
-  })
-    .done(function (data) {
-      func(data)
-      
-    })
-    .fail(function (xhr) {
-      console.error(xhr);
-    });
-
-//Silme İşlemleri
-function magazaSil(id) {
-  $.ajax({
-    url: "https://localhost:44377/api/IletisimBilgileri/" + id,
-    method: "DELETE",
-  })
-    .done(function (data) {
-      toastr["success"]("Silme İşlemi Başarılı");
-      $("#magazaListele").html("")
-      func()
-    })
-    .fail(function (xhr) {
-      console.error(xhr);
-    });
-}
-
