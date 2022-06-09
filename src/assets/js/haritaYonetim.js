@@ -126,7 +126,7 @@ $("#kaydetBtn").on("click", function () {
     })
       .done(function (e) {
         $("#magazaForm")[0].reset()
-        
+        location.reload();
         toastr["success"]("Kayıt İşlemi Başarılı");
       })
       .fail(function (xhr) {
@@ -136,7 +136,6 @@ $("#kaydetBtn").on("click", function () {
 });
 
 //Datatable Listeleme
-function Listele() {
   $.ajax({
     url: "https://localhost:44377/api/IletisimBilgileri",
     method: "GET",
@@ -162,11 +161,11 @@ function Listele() {
           },
         ],
       });
+     
     })
     .fail(function (xhr) {
       console.error(xhr);
     });
-}
 
 //Silme İşlemleri
 function magazaSil(id) {
@@ -176,10 +175,10 @@ function magazaSil(id) {
   })
     .done(function (e) {
       toastr["success"]("Silme İşlemi Başarılı");
+      location.reload();
     })
     .fail(function (xhr) {
       console.error(xhr);
     });
 }
 
-Listele();
