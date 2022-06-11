@@ -48,35 +48,26 @@ function illeriGetir(api) {
       $("#yonetimIl").empty();
       $("#yonetimIl").append('<option value="0">İl Seçiniz</option>');
       $.each(data, function () {
-        $("#yonetimIl").append(
-          '<option value="' + this.id + '">' + this.sehiradi + "</option>"
-        );
+        $("#yonetimIl").append('<option value="' + this.id + '">' + this.sehiradi + "</option>");
       });
     })
     .fail(function (xhr) {
       console.error(xhr);
     });
 }
-function ilceleriGetir(api) {
-  $("#yonetimIl").on("change", function () {
-    let ilId = $(this).val();
-    $.ajax({
-      url: api + ilId,
-      method: "GET",
-    })
-      .done(function (data) {
-        $("#yonetimIlce").empty();
-        $("#yonetimIlce").append('<option value="0">İlçe Seçiniz</option>');
-        $.each(data, function () {
-          $("#yonetimIlce").append(
-            '<option value="' + this.id + '">' + this.ilceadi + "</option>"
-          );
-        });
-      })
-      .fail(function (xhr) {
-        console.error(xhr);
+function ilceleriGetir(api, ilId) {
+  $.ajax({
+    url: api + ilId,
+    method: "GET",
+  })
+    .done(function (data) {
+      $.each(data, function () {
+        $("#yonetimIlce").append('<option id="' + this.id + '" value="' + this.id + '">' + this.ilceadi + "</option>");
       });
-  });
+    })
+    .fail(function (xhr) {
+      console.error(xhr);
+    });
 }
 function veriGonder(api, data) {
   $.ajax({
@@ -96,6 +87,58 @@ function veriGonder(api, data) {
       console.error(xhr);
     });
 }
+function veriGuncelle(id) {
+  
+  $.ajax({
+    url: magazaApi + id,
+    method: "GET",
+  })
+    .done(function (data) {
+      ilceleriGetir(ilceApi, data.il);
+      $("#yonetimIl").val(data.il)
+      $("#yonetimIlce").empty()
+      $("#yonetimIlce > select > option[value=" + data.ilce +"]").attr("selected",true)
+      $("#mazagaAdi").val(data.magzaAdi);
+      $("#acikAdres").val(data.acikAdres);
+      $("#telefon").val(data.telefon);
+      $("#enlem").val(data.enlem);
+      $("#boylam").val(data.enlem);
+      marker = L.marker([data.enlem, data.enlem]);
+      marker.addTo(map);
+
+      
+    })
+    .fail(function (xhr) {
+      console.error(xhr);
+    });
+
+  // let data = {
+  //   id: id,
+  //   magzaAdi:magzaAdi,
+  //   acikAdres: acikAdres,
+  //   enlem: enlem,
+  //   boylam: boylam,
+  //   ilId: ilId,
+  //   ilceId: ilceId,
+  //   telefon: telefon
+  // };
+  // $.ajax({
+  //   url: magazaApi + id,
+  //   method: "PUT",
+  //   contentType: "application/json",
+  //   dataType: "json",
+  //   data: JSON.stringify(data),
+  // })
+  //   .done(function (e) {
+  //     $("#magazaForm")[0].reset();
+  //     toastr["success"]("Güncelleme İşlemi Başarılı");
+  //     $("#magazaListele").html("");
+  //     magazaListele();
+  //   })
+  //   .fail(function (xhr) {
+  //     console.error(xhr);
+  //   });
+}
 function veriSil(id) {
   $.ajax({
     url: "https://localhost:44377/api/IletisimBilgileri/" + id,
@@ -110,7 +153,6 @@ function veriSil(id) {
       console.error(xhr);
     });
 }
-
 function datatableListele(api) {
   $.ajax({
     url: api,
@@ -126,7 +168,6 @@ function datatableListele(api) {
 
 //Fonksiyonları Çağırma
 illeriGetir(ilApi);
-ilceleriGetir(ilceApi);
 datatableListele(magazaApi);
 
 //Verilerin Veritabanına gönderilmesi
@@ -217,4 +258,9 @@ function magazaListele() {
       });
     });
 }
-//Datatable Listeleme
+
+//İlçeleri Listeleme
+$("#yonetimIl").on("change", function () {
+  let ilId = $(this).val();
+  ilceleriGetir(ilceApi, ilId);
+});
