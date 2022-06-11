@@ -5,9 +5,18 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap",
 }).addTo(map);
 
-let marker;
-
+var marker = null;
 map.on("click", function mapClickListen(e) {
+  if (marker !== null) {
+    map.removeLayer(marker);
+  }
+  marker = L.marker(e.latlng).addTo(map);
+
+  marker.on("click", function (e) {
+    map.removeLayer(marker);
+    $("#magazaForm")[0].reset();
+  });
+
   $.ajax({
     method: "POST",
     url: `https://nominatim.openstreetmap.org/reverse.php?lat=${e.latlng.lat}&lon=${e.latlng.lng}&zoom=18&format=jsonv2`,
@@ -21,16 +30,6 @@ map.on("click", function mapClickListen(e) {
     $("#enlem").val(enlem);
     $("#boylam").val(boylam);
   });
-
-  var pos = e.latlng;
-  var marker = L.marker(pos);
-
-  marker.on("click", function (e) {
-    map.removeLayer(marker);
-    $("#magazaForm")[0].reset();
-  });
-
-  marker.addTo(map);
 });
 
 let ilApi = "https://localhost:44377/api/IletisimBilgileri/Il";
@@ -62,7 +61,7 @@ function ilceleriGetir(api, ilId) {
   })
     .done(function (data) {
       $.each(data, function () {
-        $("#yonetimIlce").append('<option id="' + this.id + '" value="' + this.id + '">' + this.ilceadi + "</option>");
+        $("#yonetimIlce").append('<option value="' + this.id + '">' + this.ilceadi + "</option>");
       });
     })
     .fail(function (xhr) {
@@ -79,6 +78,7 @@ function veriGonder(api, data) {
   })
     .done(function (e) {
       $("#magazaForm")[0].reset();
+      map.removeLayer(marker);
       toastr["success"]("Kayıt İşlemi Başarılı");
       $("#magazaListele").html("");
       magazaListele();
@@ -88,23 +88,32 @@ function veriGonder(api, data) {
     });
 }
 function veriGuncelle(id) {
-  
   $.ajax({
     url: magazaApi + id,
     method: "GET",
   })
     .done(function (data) {
+
+      if (marker !== null) {
+        map.removeLayer(marker);
+      }
+      marker = L.marker([data.enlem, data.boylam]).addTo(map);
+    
+      marker.on("click", function (e) {
+        map.removeLayer(marker);
+        $("#magazaForm")[0].reset();
+      });
+    
+
       ilceleriGetir(ilceApi, data.il);
-      $("#yonetimIl").val(data.il)
-      $("#yonetimIlce").empty()
-      $("#yonetimIlce > select > option[value=" + data.ilce +"]").attr("selected",true)
+      $("#yonetimIl").val(data.il);
+      $("#yonetimIlce").empty();
+      $("#yonetimIlce").val(data.ilce);
       $("#mazagaAdi").val(data.magzaAdi);
       $("#acikAdres").val(data.acikAdres);
       $("#telefon").val(data.telefon);
       $("#enlem").val(data.enlem);
       $("#boylam").val(data.enlem);
-      marker = L.marker([data.enlem, data.enlem]);
-      marker.addTo(map);
 
       
     })
@@ -147,6 +156,7 @@ function veriSil(id) {
     .done(function (data) {
       toastr["success"]("Silme İşlemi Başarılı");
       $("#magazaListele").html("");
+      map.removeLayer(marker);
       magazaListele();
     })
     .fail(function (xhr) {
