@@ -55,6 +55,8 @@ function ilceleriGetir(api, ilId) {
     method: "GET",
   })
     .done(function (data) {
+      $("#yonetimIlce").empty();
+      $("#yonetimIlce").append('<option value="0">İlçe Seçiniz</option>');
       $.each(data, function () {
         $("#yonetimIlce").append('<option value="' + this.id + '">' + this.ilceadi + "</option>");
       });
@@ -94,8 +96,8 @@ function veriGuncelle(id) {
       marker = L.marker([data.enlem, data.boylam]).addTo(map);
       map.setView([data.enlem, data.boylam], 10);
       ilceleriGetir(ilceApi, data.il);
+
       $("#yonetimIl").val(data.il);
-      $("#yonetimIlce").empty();
       $("#yonetimIlce").val(data.ilce);
       $("#mazagaAdi").val(data.magzaAdi);
       $("#acikAdres").val(data.acikAdres);
@@ -142,7 +144,7 @@ function veriSil(id) {
     .done(function (data) {
       toastr["success"]("Silme İşlemi Başarılı");
       $("#magazaListele").html("");
-      map.removeLayer(marker);
+      //map.removeLayer(marker);
       magazaListele();
     })
     .fail(function (xhr) {
@@ -263,7 +265,8 @@ $("#yonetimIl").on("change", function () {
 $("select").on("change", function () {
   let ilKor = $("#yonetimIl option:selected").text();
   let ilceKor = $("#yonetimIlce option:selected").text();
-
+  console.log(ilKor)
+  console.log(ilceKor)
   fetch(`https://nominatim.openstreetmap.org/search.php?q=${ilKor}+${ilceKor}&format=jsonv2`)
     .then((response) => response.json())
     .then((data) => {
