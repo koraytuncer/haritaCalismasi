@@ -12,11 +12,6 @@ map.on("click", function mapClickListen(e) {
   }
   marker = L.marker(e.latlng).addTo(map);
 
-  marker.on("click", function (e) {
-    map.removeLayer(marker);
-    $("#magazaForm")[0].reset();
-  });
-
   $.ajax({
     method: "POST",
     url: `https://nominatim.openstreetmap.org/reverse.php?lat=${e.latlng.lat}&lon=${e.latlng.lng}&zoom=18&format=jsonv2`,
@@ -93,18 +88,11 @@ function veriGuncelle(id) {
     method: "GET",
   })
     .done(function (data) {
-
       if (marker !== null) {
         map.removeLayer(marker);
       }
       marker = L.marker([data.enlem, data.boylam]).addTo(map);
-    
-      marker.on("click", function (e) {
-        map.removeLayer(marker);
-        $("#magazaForm")[0].reset();
-      });
-    
-
+      map.setView([data.enlem, data.boylam], 10);
       ilceleriGetir(ilceApi, data.il);
       $("#yonetimIl").val(data.il);
       $("#yonetimIlce").empty();
@@ -114,8 +102,6 @@ function veriGuncelle(id) {
       $("#telefon").val(data.telefon);
       $("#enlem").val(data.enlem);
       $("#boylam").val(data.enlem);
-
-      
     })
     .fail(function (xhr) {
       console.error(xhr);
@@ -268,9 +254,26 @@ function magazaListele() {
       });
     });
 }
-
 //İlçeleri Listeleme
 $("#yonetimIl").on("change", function () {
   let ilId = $(this).val();
   ilceleriGetir(ilceApi, ilId);
 });
+
+$("select").on("change", function () {
+  let ilKor = $("#yonetimIl option:selected").text();
+  let ilceKor = $("#yonetimIlce option:selected").text();
+
+  fetch(`https://nominatim.openstreetmap.org/search.php?q=${ilKor}+${ilceKor}&format=jsonv2`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.length > 0) {
+        map.setView([data[0].lat, data[0].lon], 12);
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+//il ve ilçeye göre odaklanma

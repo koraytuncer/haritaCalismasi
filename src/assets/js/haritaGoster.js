@@ -5,6 +5,23 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap",
 }).addTo(map);
 
+$("select").on("change", function () {
+  let ilKor = $("#yonetimIl option:selected").text();
+  let ilceKor = $("#yonetimIlce option:selected").text();
+
+  fetch(`https://nominatim.openstreetmap.org/search.php?q=${ilKor}+${ilceKor}&format=jsonv2`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.length > 0) {
+        map.setView([data[0].lat, data[0].lon], 12);
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
+
 //Api ile verilerin çekilmesi
 let api = "https://localhost:44377/api/IletisimBilgileri";
 
