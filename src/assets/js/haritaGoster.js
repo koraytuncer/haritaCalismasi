@@ -6,15 +6,15 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 //Api ile verilerin çekilmesi
-let api = "https://localhost:44377/api/IletisimBilgileri";
-let filtreleApi = "https://localhost:44377/api/IletisimBilgileri/Filter";
+let api = "https://localhost:5001/api/IletisimBilgileri";
+let filtreleApi = "https://localhost:5001/api/IletisimBilgileri/Filter";
 
 $.ajax({
   url: api,
   method: "GET",
 })
   .done(function (data) {
-    
+
     data.forEach((hrt, index) => {
       //Sonuc Alanina cardların eklenmesi
       $("#sonucAlani").append(`
@@ -46,14 +46,14 @@ $.ajax({
       $("#cardLink" + index).click(function () {
         map.setView([hrt.enlem, hrt.boylam], 12);
       });
- 
+
 
     });
-    
+
     uniqueIl = data.filter((set => f => !set.has(f.il) && set.add(f.il))(new Set));
     uniqueIlce = data.filter((set => f => !set.has(f.ilce) && set.add(f.ilce))(new Set));
 
-    
+
     //İllerin Listelenmesi
     $("#haritaIl").empty();
     $("#haritaIl").append('<option value="0">İl Seçiniz</option>');

@@ -27,9 +27,9 @@ map.on("click", function mapClickListen(e) {
   });
 });
 
-let ilApi = "https://localhost:44377/api/IletisimBilgileri/Il";
-let ilceApi = "https://localhost:44377/api/IletisimBilgileri/Ilce/";
-let magazaApi = "https://localhost:44377/api/IletisimBilgileri/";
+let ilApi = "https://localhost:5001/api/IletisimBilgileri/Il";
+let ilceApi = "https://localhost:5001/api/IletisimBilgileri/Ilce/";
+let magazaApi = "https://localhost:5001/api/IletisimBilgileri/";
 
 //Api Fonksiyonlar
 function illeriGetir(api) {
