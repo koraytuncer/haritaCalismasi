@@ -5,17 +5,16 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap",
 }).addTo(map);
 
-
-
-
 //Api ile verilerin çekilmesi
 let api = "https://localhost:44377/api/IletisimBilgileri";
+let filtreleApi = "https://localhost:44377/api/IletisimBilgileri/Filter";
 
 $.ajax({
   url: api,
   method: "GET",
 })
   .done(function (data) {
+    
     data.forEach((hrt, index) => {
       //Sonuc Alanina cardların eklenmesi
       $("#sonucAlani").append(`
@@ -45,30 +44,31 @@ $.ajax({
 
       //Mağazalara Zoom işlemi
       $("#cardLink" + index).click(function () {
-        map.setView([hrt.enlem, hrt.boylam], 15);
+        map.setView([hrt.enlem, hrt.boylam], 12);
       });
-    });
-
-     //İllerin Listelenmesi
-     $("#haritaIl").empty();
-     $("#haritaIl").append('<option value="0">İl Seçiniz</option>');
  
-     $.each(data, function () {
-       $("#haritaIl").append('<option value="' + this.id + '">' + this.il + "</option>");
-     });
-     //İlçelerin Listelenmesi
-     $("#haritaIl").on("change", function () {
+
+    });
+    
+    uniqueIl = data.filter((set => f => !set.has(f.il) && set.add(f.il))(new Set));
+    uniqueIlce = data.filter((set => f => !set.has(f.ilce) && set.add(f.ilce))(new Set));
+
+    
+    //İllerin Listelenmesi
+    $("#haritaIl").empty();
+    $("#haritaIl").append('<option value="0">İl Seçiniz</option>');
+
+    $.each(uniqueIl, function () {
+      $("#haritaIl").append('<option value="' + this.id + '">' + this.il + "</option>");
+    });
+    //İlçelerin Listelenmesi
+    $("#haritaIl").on("change", function () {
       $("#haritaIlce").empty();
       $("#haritaIlce").append('<option value="0">İlçe Seçiniz</option>');
-      $.each(data, function () {
+      $.each(uniqueIlce, function () {
         $("#haritaIlce").append('<option value="' + this.id + '">' + this.ilce + "</option>");
       });
-   
-});
-
-
-
-
+    });
   })
   .fail(function (xhr) {
     console.error(xhr);

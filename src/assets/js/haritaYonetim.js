@@ -31,7 +31,7 @@ let ilApi = "https://localhost:44377/api/IletisimBilgileri/Il";
 let ilceApi = "https://localhost:44377/api/IletisimBilgileri/Ilce/";
 let magazaApi = "https://localhost:44377/api/IletisimBilgileri/";
 
-//Fonksiyonlar
+//Api Fonksiyonlar
 function illeriGetir(api) {
   $.ajax({
     url: api,
@@ -78,7 +78,7 @@ function veriGonder(api, data) {
       map.removeLayer(marker);
       toastr["success"]("Kayıt İşlemi Başarılı");
       $("#magazaListele").html("");
-      magazaListele();
+      magazaListele(magazaApi);
     })
     .fail(function (xhr) {
       console.error(xhr);
@@ -136,16 +136,16 @@ function veriGuncelle(id) {
   //     console.error(xhr);
   //   });
 }
-function veriSil(id) {
+function veriSil(id, api) {
   $.ajax({
-    url: "https://localhost:44377/api/IletisimBilgileri/" + id,
+    url: api + id,
     method: "DELETE",
   })
     .done(function (data) {
       toastr["success"]("Silme İşlemi Başarılı");
       $("#magazaListele").html("");
       //map.removeLayer(marker);
-      magazaListele();
+      magazaListele(magazaApi);
     })
     .fail(function (xhr) {
       console.error(xhr);
@@ -157,7 +157,7 @@ function datatableListele(api) {
     method: "GET",
   })
     .done(function (data) {
-      magazaListele(data);
+      magazaListele(api);
     })
     .fail(function (xhr) {
       console.error(xhr);
@@ -216,44 +216,50 @@ $("#kaydetBtn").on("click", function () {
 });
 
 //Veri Listeleme Fonksiyonu
-function magazaListele() {
-  fetch("https://localhost:44377/api/IletisimBilgileri")
+function magazaListele(api) {
+  fetch(api)
     .then((res) => res.json())
     .then((res) => {
-      res.forEach((element) => {
-        $("#magazaListele").append(`
-    <tr>
-    <th scope="row">${element.id}</th>
-    <td>${element.il}</td>
-    <td>${element.ilce}</td>
-    <td>${element.magzaAdi}</td>
-    <td>${element.acikAdres}</td>
-    <td>${element.telefon}</td>
-    <td>${parseFloat(element.enlem).toFixed(6)}</td>
-    <td>${parseFloat(element.boylam).toFixed(6)}</td>
-    <td>
-    <button type="button" class="btn btn-sm btn-outline-success" onclick="veriGuncelle(${element.id})">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-              <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-            </svg>
-                  <span class="visually-hidden">Button</span>
-             
-                </button>
-         
-         <button type="button" class="btn btn-outline-danger btn-sm" onclick="veriSil(${element.id})">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"></path>
-                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"></path>
-                  </svg>
-                  <span class="visually-hidden">Button</span>
-                </button>
-         
-    </td>
-    </tr>
-    
-    `);
-      });
+      if (res.length > 0) {
+        res.forEach((element) => {
+          $("#magazaListele").append(`
+      <tr>
+      <th scope="row">${element.id}</th>
+      <td>${element.il}</td>
+      <td>${element.ilce}</td>
+      <td>${element.magzaAdi}</td>
+      <td>${element.acikAdres}</td>
+      <td>${element.telefon}</td>
+      <td>${parseFloat(element.enlem).toFixed(6)}</td>
+      <td>${parseFloat(element.boylam).toFixed(6)}</td>
+      <td>
+      <button type="button" class="btn btn-sm btn-outline-success" onclick="veriGuncelle(${element.id})">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+              </svg>
+                    <span class="visually-hidden">Button</span>
+               
+                  </button>
+           
+           <button type="button" class="btn btn-outline-danger btn-sm" onclick="veriSil(${element.id},magazaApi)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"></path>
+                      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"></path>
+                    </svg>
+                    <span class="visually-hidden">Button</span>
+                  </button>
+           
+      </td>
+      </tr>
+      
+      `);
+        });
+      } else {
+        $(".tableAlani").append(`
+      <p><h6 class="text-center">Mağaza Bulunamadı</h6> </p>
+      `);
+      }
     });
 }
 //İlçeleri Listeleme
@@ -265,8 +271,6 @@ $("#yonetimIl").on("change", function () {
 $("select").on("change", function () {
   let ilKor = $("#yonetimIl option:selected").text();
   let ilceKor = $("#yonetimIlce option:selected").text();
-  console.log(ilKor)
-  console.log(ilceKor)
   fetch(`https://nominatim.openstreetmap.org/search.php?q=${ilKor}+${ilceKor}&format=jsonv2`)
     .then((response) => response.json())
     .then((data) => {
@@ -278,5 +282,3 @@ $("select").on("change", function () {
       console.error(error);
     });
 });
-
-//il ve ilçeye göre odaklanma
