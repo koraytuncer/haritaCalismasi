@@ -14,7 +14,6 @@ $.ajax({
   method: "GET",
 })
   .done(function (data) {
-
     data.forEach((hrt, index) => {
       //Sonuc Alanina cardların eklenmesi
       $("#sonucAlani").append(`
@@ -46,13 +45,14 @@ $.ajax({
       $("#cardLink" + index).click(function () {
         map.setView([hrt.enlem, hrt.boylam], 12);
       });
-
-
     });
 
-    uniqueIl = data.filter((set => f => !set.has(f.il) && set.add(f.il))(new Set));
-    uniqueIlce = data.filter((set => f => !set.has(f.ilce) && set.add(f.ilce))(new Set));
-
+    uniqueIl = data.filter(
+      (
+        (set) => (f) =>
+          !set.has(f.il) && set.add(f.il)
+      )(new Set())
+    );
 
     //İllerin Listelenmesi
     $("#haritaIl").empty();
@@ -61,13 +61,43 @@ $.ajax({
     $.each(uniqueIl, function () {
       $("#haritaIl").append('<option value="' + this.id + '">' + this.il + "</option>");
     });
-    //İlçelerin Listelenmesi
+
+    //İl filtreleme
     $("#haritaIl").on("change", function () {
+      let ilKor = $("#haritaIl option:selected").text();
+
+      for (let i = 0; i < data.length; i++) {
+        if (ilKor === data[i].il) {
+          map.setView([data[i].enlem, data[i].boylam], 8);
+        }
+      }
+
+      uniqueIl = data.filter(
+        (
+          (set) => (f) =>
+            !set.has(f.il) && set.add(f.il)
+        )(new Set())
+      );
+      //İlçelerin Listelenmesi
       $("#haritaIlce").empty();
       $("#haritaIlce").append('<option value="0">İlçe Seçiniz</option>');
-      $.each(uniqueIlce, function () {
+      $.each(data, function () {
         $("#haritaIlce").append('<option value="' + this.id + '">' + this.ilce + "</option>");
       });
+
+      // let ilKor = $("#haritaIl option:selected").text();
+      // let ilceKor = $("#haritaIlce option:selected").text();
+
+      // fetch(filtreleApi)
+      //   .then((response) => response.json())
+      //   .then((data) => {
+      //     if (data.length > 0) {
+      //       map.setView([data[0].lat, data[0].lon], 12);
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //   });
     });
   })
   .fail(function (xhr) {
