@@ -39,7 +39,9 @@ namespace WebApi.Controllers
                               Il = il.sehiradi,
                               Ilce = ilce.ilceadi,
                               MagzaAdi = iletisim.MagzaAdi,
-                              Telefon = iletisim.Telefon
+                              Telefon = iletisim.Telefon,
+                              IlceId = ilce.id,
+                              IlId = il.id
                           }).ToList();
 
 
