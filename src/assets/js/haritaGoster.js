@@ -59,11 +59,14 @@ $.ajax({
     $("#haritaIl").append('<option value="0">İl Seçiniz</option>');
 
     $.each(uniqueIl, function () {
-      $("#haritaIl").append('<option value="' + this.id + '">' + this.il + "</option>");
+      $("#haritaIl").append(
+        '<option value="' + this.id + '">' + this.il + "</option>"
+      );
     });
 
     //İl filtreleme
-    $("#haritaIl").on("change", function () {
+
+    $("#haritaIl").on("change", function (event) {
       let ilKor = $("#haritaIl option:selected").text();
 
       for (let i = 0; i < data.length; i++) {
@@ -72,32 +75,35 @@ $.ajax({
         }
       }
 
-      uniqueIl = data.filter(
-        (
-          (set) => (f) =>
-            !set.has(f.il) && set.add(f.il)
-        )(new Set())
-      );
+      const ilceFilter = data.filter((ilce) => {
+        return ilce.il === ilKor ? ilce : "";
+      });
+      $("#haritaIlce").on("change", function (event) {
+        var ilceKor = $("#haritaIlce option:selected").text();
+        if (ilceKor) {
+          for (let i = 0; i < ilceFilter.length; i++) {
+            if (ilceKor === ilceFilter[i].ilce) {
+              map.setView([ilceFilter[i].enlem, ilceFilter[i].boylam], 13);
+            }
+          }
+        }
+      });
+
+      console.log(ilceFilter);
+      // uniqueIlce = data.filter(
+      //   (
+      //     (set) => (f) =>
+      //       !set.has(f.ilce) && set.add(f.ilce)
+      //   )(new Set())
+      // );
       //İlçelerin Listelenmesi
       $("#haritaIlce").empty();
       $("#haritaIlce").append('<option value="0">İlçe Seçiniz</option>');
-      $.each(data, function () {
-        $("#haritaIlce").append('<option value="' + this.id + '">' + this.ilce + "</option>");
+      $.each(ilceFilter, function () {
+        $("#haritaIlce").append(
+          '<option value="' + this.id + '">' + this.ilce + "</option>"
+        );
       });
-
-      // let ilKor = $("#haritaIl option:selected").text();
-      // let ilceKor = $("#haritaIlce option:selected").text();
-
-      // fetch(filtreleApi)
-      //   .then((response) => response.json())
-      //   .then((data) => {
-      //     if (data.length > 0) {
-      //       map.setView([data[0].lat, data[0].lon], 12);
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     console.error(error);
-      //   });
     });
   })
   .fail(function (xhr) {
