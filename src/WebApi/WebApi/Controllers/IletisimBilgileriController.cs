@@ -52,8 +52,26 @@ namespace WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var data = await _context.IletisimBilgileri.FindAsync(id);
-            return Ok(data);
+           // var data = await _context.IletisimBilgileri.FindAsync(id);
+
+            var result = await (from iletisim in _context.IletisimBilgileri
+                          join il in _context.iller on iletisim.Il equals il.id
+                          join ilce in _context.ilceler on iletisim.Ilce equals ilce.id
+                          select new IletisimBilgileriDto
+                          {
+                              Id = iletisim.Id,
+                              AcikAdres = iletisim.AcikAdres,
+                              Boylam = iletisim.Boylam,
+                              Enlem = iletisim.Enlem,
+                              Il = il.sehiradi,
+                              Ilce = ilce.ilceadi,
+                              MagzaAdi = iletisim.MagzaAdi,
+                              Telefon = iletisim.Telefon,
+                              IlceId = ilce.id,
+                              IlId = il.id
+                          }).FirstOrDefaultAsync(m => m.Id == id);
+
+            return Ok(result);
         }
 
         [HttpPost("Filter")]
