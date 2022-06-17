@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using WebApi.Entities;
 
@@ -13,12 +15,14 @@ namespace WebApi.Context
 
         public AppDbContext()
         {
-            DbPath = "iletisim.db";
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite($"Data Source={DbPath}");
+           var path =  Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+
+            optionsBuilder.UseSqlite($"Data Source ={path}/iletisim.db");
         }
 
 
