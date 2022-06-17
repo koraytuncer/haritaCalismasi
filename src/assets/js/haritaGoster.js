@@ -25,6 +25,7 @@ $.ajax({
                         <span class="magazaAdres">${hrt.acikAdres}</span>
                     </div>
                     <div class="col-12 align-self-center mt-2">
+                    <i class="bi bi-telephone-fill"></i>
                         <span class="magazaTelefon">${hrt.telefon}</span>
                     </div>
                 </div>

@@ -34,12 +34,12 @@
                                 <select id="yonetimIlce" class="form-select form-select-lg mb-1">
                                     <option value="0">İlçe Seçiniz</option>
                                 </select>
-                                <input id="mazagaAdi" type="text" class="form-control form-control-lg mb-1"
+                                <input maxlength="150" id="mazagaAdi" type="text" class="form-control form-control-lg mb-1"
                                     placeholder="Mağaza Adı" />
-                                <textarea id="acikAdres" class="form-control mb-1" rows="6"
+                                <textarea maxlength="250" id="acikAdres" class="form-control mb-1" rows="6"
                                     placeholder="Açık Adres Giriniz"></textarea>
                                 </textarea>
-                                <input id="telefon" type="text" class="form-control form-control-lg mb-1"
+                                <input maxlength="12" id="telefon" type="text" class="form-control form-control-lg mb-1"
                                     placeholder="İletişim Bilgisi" />
                         </div>
                         <div class="input-group mt-1">
@@ -48,7 +48,7 @@
                         </div>
 
                         </form>
-                        <div class="d-grid gap-2 mt-1">
+                        <div id="btnAction" class="d-grid gap-2 mt-1">
                             <button id="kaydetBtn" class="btn btn-primary btn-lg" type="button">Kaydet</button>
                         </div>
                     </div>

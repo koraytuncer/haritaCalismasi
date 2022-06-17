@@ -38,6 +38,7 @@ function illeriGetir(api) {
     method: "GET",
   })
     .done(function (data) {
+   
       //İllerin Listelenmesi
       $("#yonetimIl").empty();
       $("#yonetimIl").append('<option value="0">İl Seçiniz</option>');
@@ -49,12 +50,13 @@ function illeriGetir(api) {
       console.error(xhr);
     });
 }
-function ilceleriGetir(api, ilId) {
+function ilceleriGetir(api, ilNum) {
   $.ajax({
-    url: api + ilId,
+    url: api + ilNum,
     method: "GET",
   })
     .done(function (data) {
+    
       $("#yonetimIlce").empty();
       $("#yonetimIlce").append('<option value="0">İlçe Seçiniz</option>');
       $.each(data, function () {
@@ -90,51 +92,65 @@ function veriGuncelle(id) {
     method: "GET",
   })
     .done(function (data) {
+      $("#kaydetBtn").hide();
+      $("#btnAction").append(`
+      <button id="guncelleBtn" class="btn btn-success btn-lg" type="button">Güncelle</button>
+      `)
+
       if (marker !== null) {
         map.removeLayer(marker);
       }
       marker = L.marker([data.enlem, data.boylam]).addTo(map);
       map.setView([data.enlem, data.boylam], 10);
-      ilceleriGetir(ilceApi, data.il);
-
-      $("#yonetimIl").val(data.il);
-      $("#yonetimIlce").val(data.ilce);
+      ilceleriGetir(ilceApi, data.ilId);
+      $("#yonetimIl").val(data.ilId);
+      $("#yonetimIlce").val(data.ilceId);
       $("#mazagaAdi").val(data.magzaAdi);
       $("#acikAdres").val(data.acikAdres);
       $("#telefon").val(data.telefon);
       $("#enlem").val(data.enlem);
       $("#boylam").val(data.enlem);
+      
+      $("#guncelleBtn").click(function () {
+        console.log($("#mazagaAdi").val())
+        var settings = {
+          "url": "https://localhost:5001/api/IletisimBilgileri",
+          "method": "PUT",
+          "timeout": 0,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "data": JSON.stringify({
+            "id": data.id,
+            "il": data.ilId,
+            "ilce": data.ilceId,
+            "magzaAdi": $("#mazagaAdi").val(),
+            "acikAdres": $("#acikAdres").val(),
+            "telefon": $("#telefon").val(),
+            "enlem": $("#enlem").val(),
+            "boylam": $("#boylam").val(),
+          }),
+        };
+        
+        $.ajax(settings).done(function (response) {
+          $("#magazaForm")[0].reset();
+          map.removeLayer(marker);
+          toastr["success"]("Güncelleme İşlemi Başarılı");
+          $("#magazaListele").html("");
+          magazaListele(magazaApi);
+
+        });
+          
+
+
+      })
+      
     })
     .fail(function (xhr) {
       console.error(xhr);
     });
 
-  // let data = {
-  //   id: id,
-  //   magzaAdi:magzaAdi,
-  //   acikAdres: acikAdres,
-  //   enlem: enlem,
-  //   boylam: boylam,
-  //   ilId: ilId,
-  //   ilceId: ilceId,
-  //   telefon: telefon
-  // };
-  // $.ajax({
-  //   url: magazaApi + id,
-  //   method: "PUT",
-  //   contentType: "application/json",
-  //   dataType: "json",
-  //   data: JSON.stringify(data),
-  // })
-  //   .done(function (e) {
-  //     $("#magazaForm")[0].reset();
-  //     toastr["success"]("Güncelleme İşlemi Başarılı");
-  //     $("#magazaListele").html("");
-  //     magazaListele();
-  //   })
-  //   .fail(function (xhr) {
-  //     console.error(xhr);
-  //   });
+  
 }
 function veriSil(id, api) {
   $.ajax({
@@ -264,8 +280,8 @@ function magazaListele(api) {
 }
 //İlçeleri Listeleme
 $("#yonetimIl").on("change", function () {
-  let ilId = $(this).val();
-  ilceleriGetir(ilceApi, ilId);
+  let ilNum = $(this).val();
+  ilceleriGetir(ilceApi, ilNum);
 });
 
 $("select").on("change", function () {
