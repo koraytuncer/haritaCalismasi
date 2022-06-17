@@ -135,10 +135,13 @@ function veriGuncelle(id) {
         $.ajax(settings).done(function (response) {
           $("#magazaForm")[0].reset();
           map.removeLayer(marker);
+          map.setView([data.enlem, data.boylam], 6);
           toastr["success"]("Güncelleme İşlemi Başarılı");
           $("#magazaListele").html("");
           magazaListele(magazaApi);
-
+          $("#guncelleBtn").hide();
+          $("#kaydetBtn").show();
+          
         });
           
 
@@ -297,4 +300,9 @@ $("select").on("change", function () {
     .catch((error) => {
       console.error(error);
     });
+});
+
+
+$(document).ready(function() {
+  $('.select2').select2();
 });

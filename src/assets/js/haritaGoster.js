@@ -110,3 +110,8 @@ $.ajax({
   .fail(function (xhr) {
     console.error(xhr);
   });
+
+
+  $(document).ready(function() {
+    $('.select2').select2();
+  });

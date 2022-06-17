@@ -16,7 +16,9 @@
     <link rel="stylesheet" href="../assets/css/autocomplete.min.css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
     <script src="../assets/js/autocomplete.min.js"></script>
-    <title>Kurum Sayfası</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <title>K91 - Bayi Haritalama Uygulaması</title>
 </head>
 
 <body>
@@ -27,11 +29,10 @@
                     <div id="aramaAlani">
                         <div class="form-group">
                             <form id="magazaForm">
-
-                                <select id="yonetimIl" class="form-select form-select-lg mb-1">
+                                <select id="yonetimIl" class="select2">
                                     <option value="0">İl Seçiniz</option>
                                 </select>
-                                <select id="yonetimIlce" class="form-select form-select-lg mb-1">
+                                <select id="yonetimIlce" class="select2">
                                     <option value="0">İlçe Seçiniz</option>
                                 </select>
                                 <input maxlength="150" id="mazagaAdi" type="text" class="form-control form-control-lg mb-1"
