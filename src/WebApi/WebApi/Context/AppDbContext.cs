@@ -20,9 +20,7 @@ namespace WebApi.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-           var path =  Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-
-            optionsBuilder.UseSqlite($"Data Source ={path}/iletisim.db");
+            optionsBuilder.UseSqlite($"Data Source =iletisim.db");
         }
 
 

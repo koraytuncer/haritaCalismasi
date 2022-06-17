@@ -94,6 +94,10 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(CreateIletisimBilgileriDto model)
         {
+            var count = await _context.IletisimBilgileri.CountAsync();
+
+            if (count > 250)
+                return BadRequest();
 
             if (string.IsNullOrEmpty(model.AcikAdres)
                 || string.IsNullOrEmpty(model.MagzaAdi)
